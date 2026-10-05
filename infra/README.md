@@ -1,6 +1,6 @@
 # Google Cloud blueprint (existing VM)
 
-This Terraform blueprint imports and manages the existing `wordpress-demo`
+This Terraform blueprint imports and manages the existing `astro-cms-demo`
 Compute Engine VM in project `despliegue-prueba-510522`. It reuses that VM
 instead of creating another one, then installs Apache and Node.js and builds
 the Astro site from this GitHub repository. Docker is not used.
@@ -18,7 +18,7 @@ project. Terraform state is local and is intentionally excluded from Git.
 
 ```sh
 terraform init
-terraform import google_compute_instance.site projects/despliegue-prueba-510522/zones/us-central1-a/instances/wordpress-demo
+terraform import google_compute_instance.site projects/despliegue-prueba-510522/zones/us-central1-a/instances/astro-cms-demo
 terraform import google_compute_firewall.http projects/despliegue-prueba-510522/global/firewalls/despliegue-wordpress-allow-http
 terraform plan
 ```
@@ -33,7 +33,7 @@ terraform apply
 The startup script runs on the next VM boot. To start the imported VM:
 
 ```sh
-gcloud compute instances start wordpress-demo --zone=us-central1-a
+gcloud compute instances start astro-cms-demo --zone=us-central1-a
 ```
 
 After cloud-init finishes, read the URL from Terraform:

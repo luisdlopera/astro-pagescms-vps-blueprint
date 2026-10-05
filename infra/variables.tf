@@ -13,7 +13,7 @@ variable "zone" {
 variable "instance_name" {
   description = "Existing VM to import and manage with this blueprint."
   type        = string
-  default     = "wordpress-demo"
+  default     = "astro-cms-demo"
 }
 
 variable "repo_url" {
