@@ -1,0 +1,31 @@
+#!/bin/bash
+set -Eeuo pipefail
+exec > >(tee -a /var/log/astro-cms-startup.log) 2>&1
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y apache2 git nodejs npm rsync
+
+# Give the small free-tier VM temporary swap for the Astro build.
+if [ ! -f /swapfile ]; then
+  fallocate -l 1G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+fi
+swapon /swapfile || true
+
+if [ ! -d /opt/astro-blog-template/.git ]; then
+  rm -rf /opt/astro-blog-template
+  git clone --depth 1 "${repo_url}" /opt/astro-blog-template
+else
+  git -C /opt/astro-blog-template pull --ff-only
+fi
+
+cd /opt/astro-blog-template
+npm ci --no-audit --no-fund
+npm run build
+rsync -a --delete dist/ /var/www/html/
+chown -R www-data:www-data /var/www/html
+systemctl enable --now apache2
+systemctl reload apache2
+echo "Astro site deployed from ${repo_url}" > /var/www/html/deployment.txt
